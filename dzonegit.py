@@ -498,6 +498,7 @@ def post_receive(stdin=sys.stdin):
     for s in suffixes:
         cfpath = get_config("dzonegit.conffilepath{}".format(s))
         tplpath = get_config("dzonegit.conffiletemplate{}".format(s))
+        cfaftercmd = get_config("dzonegit.conffileaftercmd{}".format(s))
         if cfpath is None or tplpath is None:
             continue
         print("Templating config file {}…".format(cfpath))
@@ -509,6 +510,9 @@ def post_receive(stdin=sys.stdin):
                 whitelist=whitelist,
             ),
         )
+        if cfaftercmd:
+            print("Calling {}…".format(cfaftercmd))
+            subprocess.run(cfaftercmd, shell=True)
 
     if stdin.isatty():
         raise SystemExit(
